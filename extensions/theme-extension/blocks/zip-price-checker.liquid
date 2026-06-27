@@ -1,0 +1,63 @@
+<div id="zip-price-checker" style="margin: 20px 0; padding: 16px; border: 1px solid #e0e0e0; border-radius: 8px;">
+  <p style="font-size: 14px; font-weight: 600; margin-bottom: 12px;">📍 Check Price for Your Location</p>
+  
+  <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+    <input 
+      type="text" 
+      id="zip-input" 
+      placeholder="Enter ZIP code (e.g. 75028)" 
+      maxlength="5"
+      style="padding: 10px 14px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; width: 200px;"
+    />
+    <button 
+      id="check-price-btn"
+      style="padding: 10px 20px; background: #000; color: #fff; border: none; border-radius: 6px; font-size: 14px; cursor: pointer;"
+    >
+      Check Price
+    </button>
+  </div>
+
+  <div id="zip-price-result" style="margin-top: 12px; font-size: 16px; min-height: 28px;"></div>
+</div>
+
+<script>
+(function() {
+  var btn = document.getElementById('check-price-btn');
+  var input = document.getElementById('zip-input');
+  var result = document.getElementById('zip-price-result');
+  var productId = '{{ product.id }}';
+  var backendUrl = 'https://shopify-zip-pricing-64gy.onrender.com';
+
+  btn.addEventListener('click', function() {
+    var zip = input.value.trim();
+    if (!zip || zip.length !== 5 || !/^\d+$/.test(zip)) {
+      result.innerHTML = '<span style="color:#cc6600;">⚠️ Please enter a valid 5-digit ZIP code.</span>';
+      return;
+    }
+    result.innerHTML = '<span style="color:#888;">⏳ Checking price...</span>';
+    fetch(backendUrl + '/api/price', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ zip: zip, productId: productId })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      result.innerHTML = '✅ Price for <strong>' + data.location + '</strong>: <span style="font-size:20px;font-weight:700;color:#000;">$' + data.price.toLocaleString() + '</span>';
+    })
+    .catch(function() {
+      result.innerHTML = '<span style="color:#cc0000;">❌ Could not fetch price. Try again.</span>';
+    });
+  });
+
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') btn.click();
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "ZIP Price Checker",
+  "target": "section"
+}
+{% endschema %}

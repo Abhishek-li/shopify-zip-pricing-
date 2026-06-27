@@ -1,0 +1,17 @@
+client_id = "32f6eace3af9e949b38d7039bdfc111e"
+application_url = "https://shopify-zip-pricing-64gy.onrender.com"
+embedded = false
+name = "zip-price-checker"
+
+[access_scopes]
+scopes = "read_products"
+
+[webhooks]
+api_version = "2026-07"
+
+[auth]
+redirect_urls = [ "https://shopify-zip-pricing-64gy.onrender.com/api/auth" ]
+
+[build]
+include_config_on_deploy = true
+automatically_update_urls_on_dev = false
